@@ -13,12 +13,10 @@ const App = () => {
 
       <div className="app px-4 py-6">
         <Routes>
-          <Route path="/courts" element={<CourtsPage />} />
+          <Route path="/" element={<CourtsPage />} />
           <Route path="/timings" element={<TimingsPage />} />
           <Route path="/bookings" element={<PaymentsPage />} />
 
-          {/* Optional default page */}
-          <Route path="*" element={<CourtsPage />} />
         </Routes>
       </div>
     </BrowserRouter>

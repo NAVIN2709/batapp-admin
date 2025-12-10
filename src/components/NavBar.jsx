@@ -8,7 +8,7 @@ export default function Navbar() {
   const location = useLocation();
 
   const links = [
-    { label: "Courts", href: "/courts" },
+    { label: "Courts", href: "/" },
     { label: "Timings", href: "/timings" },
     { label: "Bookings", href: "/bookings" },
   ];
