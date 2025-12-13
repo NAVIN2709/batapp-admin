@@ -1,30 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Edit, Trash2, Plus } from "lucide-react";
 import AddCourtModal from "../components/AddCourtModal";
 import EditCourtModal from "../components/EditCourtModal";
+import axios from "axios";
 
 export default function CourtsPage() {
-  const [courts, setCourts] = useState([
-    {
-      id: 1,
-      name: "Court 1",
-      surface: "Artificial Turf",
-      price: 500,
-      image: "",
-    },
-    { id: 2, name: "Court 2", surface: "Mat Flooring", price: 400, image: "" },
-    { id: 3, name: "Court 3", surface: "Clay Turf", price: 550, image: "" },
-  ]);
+  const [courts, setCourts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCourts = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/turfs`);
+        setCourts(res.data);
+      } catch (error) {
+        console.error("Error fetching courts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourts();
+  }, []);
+  console.log(courts)
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingCourt, setEditingCourt] = useState(null);
 
-  // DELETE Court
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const ok = confirm("Are you sure you want to delete this court?");
     if (!ok) return;
-    setCourts(courts.filter((c) => c.id !== id));
+    setCourts((prev) => prev.filter((c) => c.id !== id));
+
+    try {
+      // 1. Call backend DELETE API
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/turfs/${id}`, {
+        headers: {
+          "x-api-key": "admin123",
+        },
+      });
+
+      alert("Court deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete court");
+    }
   };
 
   // OPEN Edit Modal
@@ -50,14 +71,14 @@ export default function CourtsPage() {
 
         {/* Courts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {courts.map((court) => (
+          {courts?.map((court, idx) => (
             <div
-              key={court.id}
+              key={idx}
               className="border rounded-xl p-4 shadow-sm hover:shadow-md transition bg-white"
             >
-              {court.image ? (
+              {court.imageUrl ? (
                 <img
-                  src={court.image}
+                  src={court.imageUrl}
                   className="w-full h-40 object-cover rounded-lg mb-3"
                 />
               ) : (
@@ -67,20 +88,20 @@ export default function CourtsPage() {
               )}
 
               <h2 className="text-xl font-bold text-gray-800">{court.name}</h2>
-              <p className="text-gray-600 mt-1">Surface: {court.surface}</p>
-              <p className="text-gray-600">Price: ₹{court.price}</p>
+              <p className="text-gray-600 mt-1">Location: {court.location}</p>
+              <p className="text-gray-600">Price: ₹{court.price}/hr</p>
 
               <div className="flex items-center justify-between mt-4">
                 <button
-                  className="flex items-center gap-2 text-green-600 hover:text-green-800 transition"
+                  className="flex items-center gap-2 text-green-600 hover:text-green-800 transition cursor-pointer"
                   onClick={() => openEditModal(court)}
                 >
                   <Edit size={20} /> Edit
                 </button>
 
                 <button
-                  className="flex items-center gap-2 text-red-600 hover:text-red-800 transition"
-                  onClick={() => handleDelete(court.id)}
+                  className="flex items-center gap-2 text-red-600 hover:text-red-800 transition cursor-pointer"
+                  onClick={() => handleDelete(court._id)}
                 >
                   <Trash2 size={20} /> Delete
                 </button>
@@ -104,7 +125,7 @@ export default function CourtsPage() {
           onClose={() => setShowEditModal(false)}
           onSave={(updatedCourt) => {
             setCourts(
-              courts.map((c) => (c.id === updatedCourt.id ? updatedCourt : c))
+              courts.map((c) => (c._id === updatedCourt._id ? updatedCourt : c))
             );
           }}
         />

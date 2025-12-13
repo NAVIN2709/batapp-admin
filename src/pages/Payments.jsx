@@ -1,35 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const PaymentsPage = () => {
-  const [bookings, setBookings] = useState([
-    {
-      id: "1",
-      name: "Rahul Sharma",
-      mobile: "9876543210",
-      date: "2024-12-10",
-      time: "05:00 PM",
-      amount: 500,
-      done: false,
-    },
-    {
-      id: "2",
-      name: "Aman Gupta",
-      mobile: "9988776655",
-      date: "2024-12-11",
-      time: "07:00 PM",
-      amount: 700,
-      done: true,
-    },
-  ]);
+  const [bookings, setBookings] = useState([]);
 
-  const toggleDone = (id) => {
-    setBookings((prev) =>
-      prev.map((b) =>
-        b.id === id
-          ? { ...b, done: !b.done }
-          : b
-      )
-    );
+  // 🔥 Fetch all bookings
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/api/bookings/allbookings"
+        );
+        setBookings(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  const updateDone = async (id) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/bookings/${id}`,
+        {
+          isDone: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error updating booking:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  };
+
+  const toggleDone = async (id) => {
+    try {
+      const updatedBooking = await updateDone(id);
+
+      setBookings((prev) =>
+        prev.map((b) => (b._id === id ? updatedBooking : b))
+      );
+    } catch (error) {
+      console.error("Failed to update booking", error);
+    }
   };
 
   return (
@@ -45,45 +64,45 @@ const PaymentsPage = () => {
               <th className="p-3">Date</th>
               <th className="p-3">Time</th>
               <th className="p-3">Amount</th>
+              <th className="p-3">Court</th>
               <th className="p-3">Status</th>
               <th className="p-3">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            {bookings.map((b) => (
-              <tr
-                key={b.id}
-                className="border-b hover:bg-gray-100 transition"
-              >
-                <td className="p-3">{b.name}</td>
-                <td className="p-3">{b.mobile}</td>
+            {bookings?.map((b) => (
+              <tr key={b._id} className="border-b hover:bg-gray-100 transition">
+                <td className="p-3">{b.guest?.name}</td>
+                <td className="p-3">{b.guest?.phone}</td>
                 <td className="p-3">{b.date}</td>
-                <td className="p-3">{b.time}</td>
-                <td className="p-3 font-semibold">₹{b.amount}</td>
+                <td className="p-3">{b.slot}</td>
+                <td className="p-3 font-semibold">₹{b.totalPrice}</td>
+                <td className="p-3 font-semibold">{b.turf.name}</td>
 
                 <td className="p-3">
-                  {b.done ? (
+                  {b.status === "paid" ? (
                     <span className="px-3 py-1 bg-green-500 text-white text-sm rounded-full">
-                      Done
+                      Paid
                     </span>
                   ) : (
                     <span className="px-3 py-1 bg-red-500 text-white text-sm rounded-full">
-                      Pending
+                      Not Paid
                     </span>
                   )}
                 </td>
 
                 <td className="p-3">
                   <button
-                    onClick={() => toggleDone(b.id)}
+                    onClick={() => toggleDone(b._id)}
+                    disabled={b.isDone == true}
                     className={`px-4 py-1 rounded-lg text-white transition ${
-                      b.done
-                        ? "bg-red-500 hover:bg-red-600"
-                        : "bg-green-600 hover:bg-green-700"
+                      b.isDone == true
+                        ? "bg-green-600 hover:bg-green-700 cursor-not-allowed"
+                        : "bg-red-500 hover:bg-red-600"
                     }`}
                   >
-                    {b.done ? "Mark Not Done" : "Mark Done"}
+                    {b.isDone ? "Slot Done" : "Mark Played"}
                   </button>
                 </td>
               </tr>

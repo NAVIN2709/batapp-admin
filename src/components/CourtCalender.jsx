@@ -46,16 +46,16 @@ const CourtCalendar = ({
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={handlePrevMonth}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className="px-1 py-1 bg-gray-200 rounded hover:bg-gray-300"
         >
           Prev
         </button>
-        <h3 className="text-xl font-semibold text-gray-900 tracking-wide">
+        <h3 className="text-md font-semibold text-gray-900 tracking-wide text-center">
           {currentMonth.format("MMMM YYYY")}
         </h3>
         <button
           onClick={handleNextMonth}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className="px-1 py-1 bg-gray-200 rounded hover:bg-gray-300"
         >
           Next
         </button>
