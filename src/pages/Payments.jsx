@@ -9,7 +9,7 @@ const PaymentsPage = () => {
     const fetchBookings = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.vite.BACKEND_URL}/api/bookings/allbookings`
+          `${import.meta.env.VITE_BACKEND_URL}/api/bookings/allbookings`
         );
         setBookings(res.data);
       } catch (err) {
@@ -23,7 +23,7 @@ const PaymentsPage = () => {
   const updateDone = async (id) => {
     try {
       const response = await axios.put(
-        `${import.meta.env.vite.BACKEND_URL}/api/bookings/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/bookings/${id}`,
         {
           isDone: true,
         }
