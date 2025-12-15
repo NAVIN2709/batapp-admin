@@ -88,7 +88,7 @@ const CourtCalendar = ({
                 ${
                   !isAvailable
                     ? "bg-red-100 text-red-600 border-red-300 cursor-not-allowed opacity-60"
-                    : "bg-green-100 text-green-700 border-green-300 hover:bg-green-200 hover:shadow-sm"
+                    : "bg-green-100 text-green-700 border-green-300 hover:shadow-sm"
                 }
                 ${
                   isSelected

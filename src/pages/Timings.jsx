@@ -15,6 +15,7 @@ export default function TimingsPage() {
   const [error, setError] = useState(null);
 
   const timeSlots = [
+    "05:00 AM",
     "06:00 AM",
     "07:00 AM",
     "08:00 AM",
