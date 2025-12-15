@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
 import axios from "axios";
+import {
+  X,
+  UploadCloud,
+  Loader2,
+  Type,
+  MapPin,
+  IndianRupee,
+} from "lucide-react";
 import { UploadPicture } from "../functions/UploadPicture";
 
 export default function EditCourtModal({ court, onClose, onSave }) {
   const [form, setForm] = useState(court);
-  const [preview, setPreview] = useState(court.image);
+  const [preview, setPreview] = useState(court.imageUrl);
   const [base64Image, setBase64Image] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +40,7 @@ export default function EditCourtModal({ court, onClose, onSave }) {
     try {
       setLoading(true);
 
-      let finalImageUrl = form.image;
+      let finalImageUrl = form.imageUrl;
 
       if (base64Image) {
         finalImageUrl = await UploadPicture(base64Image);
@@ -57,9 +64,7 @@ export default function EditCourtModal({ court, onClose, onSave }) {
         }
       );
 
-      const updated = res.data;
-
-      onSave(updated);
+      onSave(res.data);
       onClose();
     } catch (err) {
       console.error(err);
@@ -70,30 +75,64 @@ export default function EditCourtModal({ court, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-xl w-80 shadow-xl relative">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-2xl w-[380px] shadow-2xl relative">
+
+        {/* Close */}
         <button
           onClick={onClose}
           disabled={loading}
-          className="absolute top-3 right-3 text-gray-600 hover:text-black disabled:opacity-50"
+          className="absolute top-4 right-4 text-gray-500 hover:text-black disabled:opacity-50 cursor-pointer"
         >
           <X size={22} />
         </button>
 
-        <h2 className="text-2xl font-semibold mb-4 text-green-700">
+        {/* Header */}
+        <h2 className="text-2xl font-bold text-green-700">
           Edit Court
         </h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Update court details & image
+        </p>
 
-        <div className="flex flex-col gap-3">
+        {/* Image Preview */}
+        <div className="rounded-xl overflow-hidden border mb-3">
           {preview ? (
             <img
               src={preview}
-              className="w-full h-40 object-cover rounded-lg"
+              className="w-full h-44 object-cover"
             />
           ) : (
-            <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg text-gray-500">
+            <div className="w-full h-44 bg-gray-100 flex items-center justify-center text-gray-500">
               No Image
             </div>
+          )}
+        </div>
+
+        {/* Upload */}
+        <label
+          className={`
+            flex items-center justify-center gap-3
+            w-full cursor-pointer
+            border-2 border-dashed border-green-300
+            rounded-xl p-4
+            text-green-700 font-medium
+            bg-green-50
+            hover:bg-green-100
+            transition
+            ${loading ? "opacity-60 cursor-not-allowed" : ""}
+          `}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin" size={20} />
+              <span>Uploading...</span>
+            </>
+          ) : (
+            <>
+              <UploadCloud size={20} />
+              <span>Upload Image</span>
+            </>
           )}
 
           <input
@@ -101,41 +140,74 @@ export default function EditCourtModal({ court, onClose, onSave }) {
             accept="image/*"
             onChange={handleFile}
             disabled={loading}
-            className="border p-2 rounded-lg disabled:bg-gray-100"
+            className="hidden"
           />
+        </label>
 
-          <input
-            type="text"
-            className="border p-2 rounded-lg disabled:bg-gray-100"
-            value={form.name}
-            disabled={loading}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
+        {/* Inputs */}
+        <div className="mt-4 space-y-3">
 
-          <input
-            type="text"
-            className="border p-2 rounded-lg disabled:bg-gray-100"
-            value={form.location}
-            disabled={loading}
-            onChange={(e) => setForm({ ...form, location: e.target.value })}
-          />
+          {/* Name */}
+          <div className="relative">
+            <Type
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="text"
+              value={form.name}
+              disabled={loading}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="Court name"
+              className="w-full pl-10 pr-3 py-2 rounded-lg border focus:ring-2 focus:ring-green-500 focus:outline-none disabled:bg-gray-100"
+            />
+          </div>
 
-          <input
-            type="number"
-            className="border p-2 rounded-lg disabled:bg-gray-100"
-            value={form.price}
-            disabled={loading}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-          />
+          {/* Location */}
+          <div className="relative">
+            <MapPin
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="text"
+              value={form.location}
+              disabled={loading}
+              onChange={(e) =>
+                setForm({ ...form, location: e.target.value })
+              }
+              placeholder="Location"
+              className="w-full pl-10 pr-3 py-2 rounded-lg border focus:ring-2 focus:ring-green-500 focus:outline-none disabled:bg-gray-100"
+            />
+          </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Saving..." : "Save Changes"}
-          </button>
+          {/* Price */}
+          <div className="relative">
+            <IndianRupee
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="number"
+              value={form.price}
+              disabled={loading}
+              onChange={(e) =>
+                setForm({ ...form, price: e.target.value })
+              }
+              placeholder="Price per hour"
+              className="w-full pl-10 pr-3 py-2 rounded-lg border focus:ring-2 focus:ring-green-500 focus:outline-none disabled:bg-gray-100"
+            />
+          </div>
         </div>
+
+        {/* Save Button */}
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="mt-5 w-full bg-green-600 text-white py-2.5 rounded-xl font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          {loading ? "Saving..." : "Save Changes"}
+        </button>
       </div>
     </div>
   );

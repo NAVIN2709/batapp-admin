@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
 import axios from "axios";
+import {
+  X,
+  UploadCloud,
+  Loader2,
+  Type,
+  MapPin,
+  IndianRupee,
+} from "lucide-react";
 import { UploadPicture } from "../functions/UploadPicture";
 
 export default function AddCourtModal({ onClose, onAdd }) {
@@ -12,13 +19,12 @@ export default function AddCourtModal({ onClose, onAdd }) {
   });
 
   const [preview, setPreview] = useState(null);
-  const [loading, setLoading] = useState(false); // ⭐ loading state
+  const [loading, setLoading] = useState(false);
 
-  // Convert file -> base64
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file); // Converts to base64
+      reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
       reader.onerror = (error) => reject(error);
     });
@@ -28,26 +34,23 @@ export default function AddCourtModal({ onClose, onAdd }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const localUrl = URL.createObjectURL(file);
-    setPreview(localUrl);
+    setPreview(URL.createObjectURL(file));
 
     const base64 = await convertToBase64(file);
     setForm({ ...form, imageUrl: base64 });
   };
 
   const handleSubmit = async () => {
-    if (loading) return; // prevent double-click
+    if (loading) return;
     setLoading(true);
 
     try {
-      // 1. Upload base64 to Cloudinary if needed
       let finalImageUrl = form.imageUrl;
 
-      if (form.imageUrl && form.imageUrl.startsWith("data:")) {
+      if (form.imageUrl?.startsWith("data:")) {
         finalImageUrl = await UploadPicture(form.imageUrl);
       }
 
-      // 2. Prepare payload
       const payload = {
         name: form.name,
         location: form.location,
@@ -55,7 +58,6 @@ export default function AddCourtModal({ onClose, onAdd }) {
         imageUrl: finalImageUrl,
       };
 
-      // 3. Send POST request
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/turfs`,
         payload,
@@ -67,87 +69,152 @@ export default function AddCourtModal({ onClose, onAdd }) {
         }
       );
 
-      const created = res.data;
-
-      onAdd(created);
+      onAdd(res.data);
       onClose();
     } catch (error) {
       console.error(error);
       alert("Failed to add court");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-xl w-80 shadow-xl relative">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-2xl w-[380px] shadow-2xl relative">
 
+        {/* Close */}
         <button
           onClick={loading ? null : onClose}
-          className="absolute top-3 right-3 text-gray-600 hover:text-black"
           disabled={loading}
+          className="absolute top-4 right-4 text-gray-500 hover:text-black disabled:opacity-50 cursor-pointer"
         >
           <X size={22} />
         </button>
 
-        <h2 className="text-2xl font-semibold mb-4 text-green-700">
+        {/* Header */}
+        <h2 className="text-2xl font-bold text-green-700">
           Add Court
         </h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Create a new court with details & image
+        </p>
 
-        <div className="flex flex-col gap-3">
+        {/* Image Preview */}
+        <div className="rounded-xl overflow-hidden border mb-3">
           {preview ? (
-            <img src={preview} className="w-full h-40 object-cover rounded-lg" />
+            <img
+              src={preview}
+              className="w-full h-44 object-cover"
+            />
           ) : (
-            <div className="w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+            <div className="w-full h-44 bg-gray-100 flex items-center justify-center text-gray-500">
               No Image
             </div>
+          )}
+        </div>
+
+        {/* Upload */}
+        <label
+          className={`
+            flex items-center justify-center gap-3
+            w-full cursor-pointer
+            border-2 border-dashed border-green-300
+            rounded-xl p-4
+            text-green-700 font-medium
+            bg-green-50
+            hover:bg-green-100
+            transition
+            ${loading ? "opacity-60 cursor-not-allowed" : ""}
+          `}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin" size={20} />
+              <span>Uploading...</span>
+            </>
+          ) : (
+            <>
+              <UploadCloud size={20} />
+              <span>Upload Image</span>
+            </>
           )}
 
           <input
             type="file"
             accept="image/*"
             onChange={handleFile}
-            className="border p-2 rounded-lg"
             disabled={loading}
+            className="hidden"
           />
+        </label>
 
-          <input
-            type="text"
-            placeholder="Court Name"
-            className="border p-2 rounded-lg"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            disabled={loading}
-          />
+        {/* Inputs */}
+        <div className="mt-4 space-y-3">
 
-          <input
-            type="text"
-            placeholder="Location"
-            className="border p-2 rounded-lg"
-            value={form.location}
-            onChange={(e) => setForm({ ...form, location: e.target.value })}
-            disabled={loading}
-          />
+          {/* Court Name */}
+          <div className="relative">
+            <Type
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="text"
+              placeholder="Court name"
+              value={form.name}
+              disabled={loading}
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
+              className="w-full pl-10 pr-3 py-2 rounded-lg border focus:ring-2 focus:ring-green-500 focus:outline-none disabled:bg-gray-100"
+            />
+          </div>
 
-          <input
-            type="number"
-            placeholder="Price"
-            className="border p-2 rounded-lg"
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-            disabled={loading}
-          />
+          {/* Location */}
+          <div className="relative">
+            <MapPin
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="text"
+              placeholder="Location"
+              value={form.location}
+              disabled={loading}
+              onChange={(e) =>
+                setForm({ ...form, location: e.target.value })
+              }
+              className="w-full pl-10 pr-3 py-2 rounded-lg border focus:ring-2 focus:ring-green-500 focus:outline-none disabled:bg-gray-100"
+            />
+          </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className={`mt-3 px-4 py-2 rounded-lg transition text-white
-              ${loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"}`}
-          >
-            {loading ? "Loading..." : "Add Court"}
-          </button>
+          {/* Price */}
+          <div className="relative">
+            <IndianRupee
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="number"
+              placeholder="Price per hour"
+              value={form.price}
+              disabled={loading}
+              onChange={(e) =>
+                setForm({ ...form, price: e.target.value })
+              }
+              className="w-full pl-10 pr-3 py-2 rounded-lg border focus:ring-2 focus:ring-green-500 focus:outline-none disabled:bg-gray-100"
+            />
+          </div>
         </div>
+
+        {/* Submit */}
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="mt-5 w-full bg-green-600 text-white py-2.5 rounded-xl font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          {loading ? "Adding..." : "Add Court"}
+        </button>
       </div>
     </div>
   );

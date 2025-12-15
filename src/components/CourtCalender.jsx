@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
+import { ArrowBigLeft, ArrowBigRight, ArrowBigRightIcon } from "lucide-react";
 
 const CourtCalendar = ({
   availability = {},
@@ -46,18 +47,45 @@ const CourtCalendar = ({
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={handlePrevMonth}
-          className="px-1 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className="
+    p-2
+    rounded-xl
+    border border-green-200
+    bg-green-50
+    hover:bg-green-100
+    hover:border-green-300
+    shadow-sm
+    hover:shadow-md
+    transition
+    duration-200
+    active:scale-95
+    mr-2
+    cursor-pointer
+  "
         >
-          Prev
+          <ArrowBigLeft size={18} className="text-green-600" />
         </button>
         <h3 className="text-md font-semibold text-gray-900 tracking-wide text-center">
           {currentMonth.format("MMMM YYYY")}
         </h3>
         <button
           onClick={handleNextMonth}
-          className="px-1 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className="
+    p-2
+    rounded-xl
+    border border-green-200
+    bg-green-50
+    hover:bg-green-100
+    hover:border-green-300
+    shadow-sm
+    hover:shadow-md
+    transition
+    duration-200
+    active:scale-95
+    cursor-pointer
+  "
         >
-          Next
+          <ArrowBigRightIcon size={18} className="text-green-600" />
         </button>
       </div>
 
