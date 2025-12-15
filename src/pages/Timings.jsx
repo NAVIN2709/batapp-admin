@@ -47,7 +47,7 @@ export default function TimingsPage() {
 
   const fetchCourts = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.vite.BACKEND_URL}/api/turfs`); 
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/turfs`); 
       setCourts(response.data);
 
       // Auto-select first court if available
@@ -66,7 +66,7 @@ export default function TimingsPage() {
 
     try {
       const response = await axios.get(
-        `${import.meta.env.vite.BACKEND_URL}/api/turfs/court-timings/${courtId}`
+        `${import.meta.env.VITE_BACKEND_URL}/api/turfs/court-timings/${courtId}`
       );
       // Convert API response to availability format
       const convertedAvailability = convertBookingsToAvailability(
@@ -245,7 +245,7 @@ export default function TimingsPage() {
       });
 
       const response = await axios.put(
-        `${import.meta.env.vite.BACKEND_URL}/api/turfs/update-timings/${selectedCourtId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/turfs/update-timings/${selectedCourtId}`,
         {
           date : bookingsToSave.at(-1).date ,
           slots : bookingsToSave.at(-1).slots

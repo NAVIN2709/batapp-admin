@@ -22,7 +22,6 @@ export default function CourtsPage() {
 
     fetchCourts();
   }, []);
-  console.log(courts)
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
