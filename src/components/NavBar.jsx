@@ -1,22 +1,25 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation,useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import Logo from "../assets/logo.png";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const links = [
     { label: "Courts", href: "/" },
     { label: "Timings", href: "/timings" },
     { label: "Bookings", href: "/bookings" },
   ];
-
+  const handleLogo = () =>{
+    navigate("/")
+  }
   return (
     <nav className="w-full bg-white shadow-lg px-5 py-4 flex items-center justify-between border-b border-green-300/40 sticky top-0 z-50">
       {/* Logo */}
-      <div>
+      <div onClick={handleLogo}>
         <img src={Logo} alt="Logo" className="w-12 h-12" />
       </div>
 

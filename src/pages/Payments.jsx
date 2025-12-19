@@ -49,11 +49,10 @@ const PaymentsPage = () => {
   const filteredBookings = bookings.filter((b) => {
     const name = b.guest?.name?.toLowerCase() || "";
     const phone = b.guest?.phone || "";
-    return (
-      name.includes(search.toLowerCase()) ||
-      phone.includes(search)
-    );
+    return name.includes(search.toLowerCase()) || phone.includes(search);
   });
+
+  if (!bookings) return <div className="loading">Loading Bookings..</div>;
 
   return (
     <div className="p-4">
@@ -91,44 +90,57 @@ const PaymentsPage = () => {
               <th className="p-3">Action</th>
             </tr>
           </thead>
-
           <tbody>
-            {filteredBookings.map((b) => (
-              <tr key={b._id} className="border-b hover:bg-gray-100 transition">
-                <td className="p-3">{b.guest?.name}</td>
-                <td className="p-3">{b.guest?.phone}</td>
-                <td className="p-3">{b.date}</td>
-                <td className="p-3">{b.slot}</td>
-                <td className="p-3 font-semibold">₹{b.totalPrice}</td>
-                <td className="p-3 font-semibold">{b.turf.name}</td>
-
-                <td className="p-3">
-                  {b.status === "paid" ? (
-                    <span className="px-3 py-1 bg-green-500 text-white text-sm rounded-full">
-                      Paid
-                    </span>
-                  ) : (
-                    <span className="px-3 py-1 bg-red-500 text-white text-sm rounded-full">
-                      Not Paid
-                    </span>
-                  )}
-                </td>
-
-                <td className="p-3">
-                  <button
-                    onClick={() => toggleDone(b._id)}
-                    disabled={b.isDone}
-                    className={`px-4 py-1 rounded-lg text-white transition ${
-                      b.isDone
-                        ? "bg-green-600 cursor-not-allowed"
-                        : "bg-red-500 hover:bg-red-600"
-                    }`}
-                  >
-                    {b.isDone ? "Slot Done" : "Mark Played"}
-                  </button>
+            {filteredBookings.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={8}
+                  className="p-6 text-center text-gray-500 font-medium"
+                >
+                  No bookings found
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredBookings.map((b) => (
+                <tr
+                  key={b._id}
+                  className="border-b hover:bg-gray-100 transition"
+                >
+                  <td className="p-3">{b.guest?.name}</td>
+                  <td className="p-3">{b.guest?.phone}</td>
+                  <td className="p-3">{b.date}</td>
+                  <td className="p-3">{b.slot}</td>
+                  <td className="p-3 font-semibold">₹{b.totalPrice}</td>
+                  <td className="p-3 font-semibold">{b.turf.name}</td>
+
+                  <td className="p-3">
+                    {b.status === "paid" ? (
+                      <span className="px-3 py-1 bg-green-500 text-white text-sm rounded-full">
+                        Paid
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 bg-red-500 text-white text-sm rounded-full">
+                        Not Paid
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="p-3">
+                    <button
+                      onClick={() => toggleDone(b._id)}
+                      disabled={b.isDone}
+                      className={`px-4 py-1 rounded-lg text-white transition ${
+                        b.isDone
+                          ? "bg-green-600 cursor-not-allowed"
+                          : "bg-red-500 hover:bg-red-600"
+                      }`}
+                    >
+                      {b.isDone ? "Slot Done" : "Mark Played"}
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

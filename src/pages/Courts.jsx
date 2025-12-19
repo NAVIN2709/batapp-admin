@@ -53,6 +53,10 @@ export default function CourtsPage() {
     setShowEditModal(true);
   };
 
+  if (!courts) return (
+    <div className="loading">Loading Courts..</div>
+  )
+
   return (
     <div className="">
       <div className="main p-6">
