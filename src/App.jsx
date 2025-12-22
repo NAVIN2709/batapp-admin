@@ -7,6 +7,7 @@ import PaymentsPage from "./pages/Payments";
 import Navbar from "./components/NavBar";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Memberships from "./pages/Memberships";
 
 const App = () => {
   return (
@@ -36,6 +37,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <PaymentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/memberships"
+            element={
+              <ProtectedRoute>
+                <Memberships />
               </ProtectedRoute>
             }
           />

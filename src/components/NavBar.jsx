@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation,useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import Logo from "../assets/logo.png";
 
@@ -12,10 +12,11 @@ export default function Navbar() {
     { label: "Courts", href: "/" },
     { label: "Timings", href: "/timings" },
     { label: "Bookings", href: "/bookings" },
+    { label: "Memberships", href: "/memberships" },
   ];
-  const handleLogo = () =>{
-    navigate("/")
-  }
+  const handleLogo = () => {
+    navigate("/");
+  };
   return (
     <nav className="w-full bg-white shadow-lg px-5 py-4 flex items-center justify-between border-b border-green-300/40 sticky top-0 z-50">
       {/* Logo */}
@@ -44,11 +45,12 @@ export default function Navbar() {
       </div>
 
       {/* Burger / Close Icon */}
-      <button
-        className="md:hidden"
-        onClick={() => setOpen(!open)}
-      >
-        {open ? <X size={28} className="text-black" /> : <Menu size={28} className="text-black" />}
+      <button className="md:hidden" onClick={() => setOpen(!open)}>
+        {open ? (
+          <X size={28} className="text-black" />
+        ) : (
+          <Menu size={28} className="text-black" />
+        )}
       </button>
 
       {/* Mobile Menu */}
